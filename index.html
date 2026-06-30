@@ -1266,6 +1266,8 @@ const state = {
 //  INIT
 // ══════════════════════════════════
 
+const APP_BUILD_DATE = '2026-06-29';
+
 function init() {
   buildAbilityGrid();
   buildSkills();
@@ -1878,63 +1880,37 @@ function applySheet(d) {
 init();
 
 // Register service worker for offline PWA support.
-// Cache name is derived from a hash of this page's own HTML, so any edit
-// to the file automatically produces a new cache version — no manual
-// version bumping required. When a new version is detected, the app
-// activates it immediately and reloads itself.
+// IMPORTANT: this requires a real sw.js file uploaded to the SAME GitHub
+// repo folder as this HTML file (blob:/data: URLs are not reliably
+// supported by browsers for service worker registration). The sw.js
+// file is generated alongside this one — see /mnt/user-data/outputs/sw.js.
+// It uses a network-first strategy, so the browser always fetches the
+// newest version when online, and only falls back to cache when offline.
+// No manual versioning needed on either file.
 if ('serviceWorker' in navigator) {
-  (async () => {
-    // Simple, fast string hash (djb2) of the full page source
-    async function hashPage() {
-      const src = document.documentElement.outerHTML;
-      let h = 5381;
-      for (let i = 0; i < src.length; i++) { h = ((h << 5) + h) + src.charCodeAt(i); h |= 0; }
-      return 'sf2e-' + (h >>> 0).toString(36);
-    }
-    const cacheVersion = await hashPage();
-    const verBadge = document.getElementById('app-version');
-    if (verBadge) verBadge.textContent = cacheVersion.replace('sf2e-', 'v');
-
-    const swSrc = `
-      const CACHE = '${cacheVersion}';
-      self.addEventListener('install', e => {
-        e.waitUntil(caches.open(CACHE).then(c => c.addAll([self.location.href])));
-        self.skipWaiting();
-      });
-      self.addEventListener('activate', e => {
-        e.waitUntil(
-          caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
-        );
-        self.clients.claim();
-      });
-      self.addEventListener('fetch', e => {
-        e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
-      });
-    `;
-    const swBlob = new Blob([swSrc], {type: 'application/javascript'});
-    const swUrl  = URL.createObjectURL(swBlob);
-
-    try {
-      const reg = await navigator.serviceWorker.register(swUrl);
-
-      // If a different version is already waiting, activate it and reload
-      if (reg.waiting) { reg.waiting.postMessage('skipWaiting'); }
-
+  navigator.serviceWorker.register('./sw.js')
+    .then(reg => {
+      // If a waiting update exists, activate it immediately
+      if (reg.waiting) reg.waiting.postMessage('skipWaiting');
       reg.addEventListener('updatefound', () => {
-        const newWorker = reg.installing;
-        newWorker?.addEventListener('statechange', () => {
-          if (newWorker.state === 'activated') {
-            // New version is now live — reload once to pick it up
-            if (!sessionStorage.getItem('sf2e_reloaded_' + cacheVersion)) {
-              sessionStorage.setItem('sf2e_reloaded_' + cacheVersion, '1');
+        const nw = reg.installing;
+        nw?.addEventListener('statechange', () => {
+          if (nw.state === 'activated' && navigator.serviceWorker.controller) {
+            // A new version just took over — refresh once to use it
+            if (!sessionStorage.getItem('sf2e_sw_reloaded')) {
+              sessionStorage.setItem('sf2e_sw_reloaded', '1');
               location.reload();
             }
           }
         });
       });
-    } catch (e) { console.warn('Service worker registration failed:', e); }
-  })();
+    })
+    .catch(e => console.warn('Service worker registration failed:', e));
 }
+
+// Show build date as the version indicator near the title
+const verBadge = document.getElementById('app-version');
+if (verBadge) verBadge.textContent = 'v' + APP_BUILD_DATE;
 </script>
 </body>
 </html>
