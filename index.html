@@ -263,7 +263,7 @@
 <body>
 
 <header class="sheet-header">
-  <h1>Starfinder <span>2e</span></h1>
+  <h1>Starfinder <span>2e</span> <span id="app-version" style="font-size:9px;color:var(--text-muted);letter-spacing:0.04em;vertical-align:middle;"></span></h1>
   <div class="level-badge">
     <label>Level</label>
     <input type="number" id="char-level" value="1" min="1" max="20" oninput="recalcAll()">
@@ -1892,6 +1892,8 @@ if ('serviceWorker' in navigator) {
       return 'sf2e-' + (h >>> 0).toString(36);
     }
     const cacheVersion = await hashPage();
+    const verBadge = document.getElementById('app-version');
+    if (verBadge) verBadge.textContent = cacheVersion.replace('sf2e-', 'v');
 
     const swSrc = `
       const CACHE = '${cacheVersion}';
