@@ -145,6 +145,9 @@
   .skill-prof-btn[data-prof="L"] { background: var(--purple); border-color: var(--purple); color: var(--void); }
   .skill-name { font-size: 12px; color: var(--text-dim); flex: 1; }
   .skill-ability-tag { color: var(--text-muted); font-size: 10px; font-family: var(--mono); }
+  .skill-lore-type { width: 64px; background: transparent; border: none; border-bottom: 1px dashed var(--border); color: var(--text); font-size: 11px; padding: 1px 2px; outline: none; margin-right: 4px; }
+  .skill-lore-type:focus { border-bottom-color: var(--accent-dim); }
+  .skill-lore-type::placeholder { color: var(--text-muted); }
   .skill-total { font-family: var(--mono); font-size: 14px; font-weight: 700; color: var(--text); width: 28px; text-align: right; flex-shrink: 0; }
   .skill-misc-in { width: 28px; background: transparent; border: none; border-bottom: 1px dashed var(--border); color: var(--text-muted); font-family: var(--mono); font-size: 10px; text-align: center; outline: none; -moz-appearance: textfield; appearance: textfield; }
   .skill-misc-in::-webkit-inner-spin-button, .skill-misc-in::-webkit-outer-spin-button { -webkit-appearance: none; appearance: none; }
@@ -336,7 +339,156 @@
               <option value="witchwarper">Witchwarper</option>
             </select>
           </div>
-          <div class="field"><label>Background</label><input type="text" id="char-bg" placeholder="e.g. Ace Pilot"></div>
+          <div class="field">
+            <label>Background</label>
+            <select id="char-bg-select" onchange="onBackgroundChange()">
+              <option value="">— Select —</option>
+              <optgroup label="Backgrounds (A–Z)">
+                <option>Absalom Local</option>
+                <option>Acolyte</option>
+                <option>Acquisitive</option>
+                <option>Akashic Recorder</option>
+                <option>Akitonian Explorer</option>
+                <option>Alien Hunter</option>
+                <option>Ancient Elebrian</option>
+                <option>Anomaly Hunter</option>
+                <option>Antediluvian Seeker</option>
+                <option>Arena Veteran</option>
+                <option>Artist</option>
+                <option>Athlete</option>
+                <option>Bartender</option>
+                <option>Bouncer</option>
+                <option>Bounty Hunter</option>
+                <option>Brutaris Player</option>
+                <option>Busker</option>
+                <option>Chatty</option>
+                <option>Chevalier</option>
+                <option>City Slicker</option>
+                <option>Clansworn</option>
+                <option>Cleaner</option>
+                <option>Cloud Chemist</option>
+                <option>Code Carrier</option>
+                <option>Comedian</option>
+                <option>Consultant</option>
+                <option>Cook</option>
+                <option>Corporate Agent</option>
+                <option>Courier</option>
+                <option>Crystal Prospector</option>
+                <option>Crèche Born</option>
+                <option>Cyberborn</option>
+                <option>Daegox Convict</option>
+                <option>Dataphile</option>
+                <option>Defector</option>
+                <option>Detective</option>
+                <option>Diplomat</option>
+                <option>Disciple</option>
+                <option>Doctor</option>
+                <option>Dream Prophet</option>
+                <option>Dreamer Disciple</option>
+                <option>Electrician</option>
+                <option>Emissary</option>
+                <option>Eoxian Local</option>
+                <option>Escaped Experiment</option>
+                <option>Escort</option>
+                <option>Exo-Guardian</option>
+                <option>Fashionista</option>
+                <option>Final Survivor</option>
+                <option>First Ones Scholar</option>
+                <option>Fixer</option>
+                <option>Forum Aspirant</option>
+                <option>Gambler</option>
+                <option>Gene Splicer</option>
+                <option>Ghosted</option>
+                <option>Grave Medic</option>
+                <option>Green Activist</option>
+                <option>Grifter</option>
+                <option>Guidance’s Favored</option>
+                <option>Gun For Hire</option>
+                <option>Hacker</option>
+                <option>Hacktivist</option>
+                <option>Haunted</option>
+                <option>Hellforged Squire</option>
+                <option>Hitchhiker</option>
+                <option>Hustler</option>
+                <option>Icon</option>
+                <option>Joro Clone</option>
+                <option>Junker</option>
+                <option>Laborer</option>
+                <option>Lodge Administrator</option>
+                <option>Lorespire Archivist</option>
+                <option>Lost Aucturnite</option>
+                <option>Magic Officer</option>
+                <option>Magic Scholar</option>
+                <option>Magitech Specialist</option>
+                <option>Manifold Recruiter</option>
+                <option>Masked</option>
+                <option>Miner</option>
+                <option>Necromancer's Apprentice</option>
+                <option>Outlaw</option>
+                <option>Party Crasher</option>
+                <option>Phisher</option>
+                <option>Pickpocket</option>
+                <option>Pilgrim</option>
+                <option>Planetary Preservationist</option>
+                <option>Prisoner</option>
+                <option>Quantum Clone</option>
+                <option>Raised by Belief</option>
+                <option>Rebel</option>
+                <option>Recluse</option>
+                <option>Recruit</option>
+                <option>Robot Adversary</option>
+                <option>Runetouched</option>
+                <option>Sacrifice</option>
+                <option>Salvager</option>
+                <option>Saw the Afterlight</option>
+                <option>Scalawag</option>
+                <option>Scaletouched</option>
+                <option>Scam Mage</option>
+                <option>Scientist</option>
+                <option>Shimmerstone Savior</option>
+                <option>Shipwrecked</option>
+                <option>Shrouded</option>
+                <option>Skyrigger</option>
+                <option>Smuggler</option>
+                <option>Socialite</option>
+                <option>Society Scout</option>
+                <option>Space Pirate</option>
+                <option>Space Trooper</option>
+                <option>Space Trucker</option>
+                <option>Spacefarer</option>
+                <option>Starfinder Trapsmith</option>
+                <option>Starship Dweller</option>
+                <option>Stowaway</option>
+                <option>Street Psychic</option>
+                <option>Street Rat</option>
+                <option>Street Vendor</option>
+                <option>Taxi Driver</option>
+                <option>Teacher</option>
+                <option>Tech Delver</option>
+                <option>Tech Jaded</option>
+                <option>Tech Priest</option>
+                <option>Tech Support</option>
+                <option>Tech Troll</option>
+                <option>Technophile</option>
+                <option>Timelost</option>
+                <option>Tomb Born</option>
+                <option>Tourist</option>
+                <option>Trooper</option>
+                <option>Unleashed</option>
+                <option>Vidgamer</option>
+                <option>War-Hardened Hero</option>
+                <option>Wayfinder</option>
+                <option>Wheel Winner</option>
+                <option>Willing Host</option>
+                <option>Xenobiologist</option>
+                <option>Xenoseeker</option>
+              </optgroup>
+              <optgroup label="Other">
+                <option>Other / Custom</option>
+              </optgroup>
+            </select>
+            <input type="text" id="char-bg" placeholder="Custom background name" style="display:none;margin-top:4px;">
+          </div>
         </div>
         <div class="field-row cols-2">
           <div class="field">
@@ -668,7 +820,8 @@ const SKILLS = [
   {id:'deception',   name:'Deception',   ab:'cha'},
   {id:'diplomacy',   name:'Diplomacy',   ab:'cha'},
   {id:'intimidation',name:'Intimidation',ab:'cha'},
-  {id:'lore',        name:'Lore',        ab:'int'},
+  {id:'lore',        name:'Lore',        ab:'int', isLore:true},
+  {id:'lore2',       name:'Lore',        ab:'int', isLore:true},
   {id:'medicine',    name:'Medicine',    ab:'wis'},
   {id:'nature',      name:'Nature',      ab:'wis'},
   {id:'occultism',   name:'Occultism',   ab:'int'},
@@ -1253,7 +1406,7 @@ const CONDITIONS = [
 // ══════════════════════════════════
 
 const state = {
-  skills: Object.fromEntries(SKILLS.map(s => [s.id, {prof:'U', misc:0}])),
+  skills: Object.fromEntries(SKILLS.map(s => [s.id, {prof:'U', misc:0, loreType: s.isLore ? '' : undefined}])),
   percProf: 'U',
   saves: {
     fort: {prof:'T', misc:0},
@@ -1266,7 +1419,7 @@ const state = {
 //  INIT
 // ══════════════════════════════════
 
-const APP_BUILD_DATE = '2026-06-29A';
+const APP_BUILD_DATE = '2026-06-29B';
 
 function init() {
   buildAbilityGrid();
@@ -1321,12 +1474,20 @@ function buildSkills() {
     <div class="skill-row" id="skrow-${sk.id}">
       <button class="skill-prof-btn" id="skprof-${sk.id}" data-prof="U"
         onclick="cycleSkillProf('${sk.id}')" title="Click to cycle proficiency">U</button>
-      <span class="skill-name">${sk.name} <span class="skill-ability-tag">${sk.ab.toUpperCase()}</span></span>
+      <span class="skill-name">
+        ${sk.isLore ? `<input type="text" class="skill-lore-type" id="skloretype-${sk.id}" placeholder="Type" oninput="updateLoreType('${sk.id}')">` : ''}
+        ${sk.name} <span class="skill-ability-tag">${sk.ab.toUpperCase()}</span>
+      </span>
       <input type="number" class="skill-misc-in" id="skmisc-${sk.id}" value="0"
         oninput="updateSkill('${sk.id}')" title="Misc bonus">
       <span class="skill-total" id="sktot-${sk.id}">+0</span>
     </div>
   `).join('');
+}
+
+function updateLoreType(id) {
+  state.skills[id].loreType = document.getElementById('skloretype-'+id).value;
+  autoSave();
 }
 
 function cycleSkillProf(id) {
@@ -1411,6 +1572,19 @@ function setSaveProf(id, p) {
 // ══════════════════════════════════
 //  CLASS CHANGE
 // ══════════════════════════════════
+
+function onBackgroundChange() {
+  const sel = document.getElementById('char-bg-select').value;
+  const customInput = document.getElementById('char-bg');
+  if (sel === 'Other / Custom') {
+    customInput.style.display = '';
+    customInput.value = '';
+    customInput.focus();
+  } else {
+    customInput.style.display = 'none';
+    customInput.value = sel;
+  }
+}
 
 function onClassChange() {
   const cls = document.getElementById('char-class').value;
@@ -1736,6 +1910,7 @@ function collectSheet() {
     sub:    document.getElementById('char-subclass').value,
     anchor: document.getElementById('char-anchor').value,
     bg: document.getElementById('char-bg').value,
+    bgSelect: document.getElementById('char-bg-select').value,
     player: document.getElementById('char-player').value,
     campaign: document.getElementById('char-campaign').value,
     theme: document.getElementById('char-theme').value,
@@ -1828,12 +2003,26 @@ function applySheet(d) {
     setTimeout(()=>{ document.getElementById('char-heritage').value = d.heritage||''; }, 10);
     document.getElementById('char-class').value = d.cls||'';
     document.getElementById('char-bg').value = d.bg||'';
+    if (d.bgSelect) {
+      document.getElementById('char-bg-select').value = d.bgSelect;
+      if (d.bgSelect === 'Other / Custom') document.getElementById('char-bg').style.display = '';
+    } else if (d.bg) {
+      // Legacy save with only a free-text value — default dropdown to Other/Custom
+      document.getElementById('char-bg-select').value = 'Other / Custom';
+      document.getElementById('char-bg').style.display = '';
+    }
     document.getElementById('char-player').value = d.player||'';
     document.getElementById('char-campaign').value = d.campaign||'';
     document.getElementById('char-theme').value = d.theme||'';
     document.getElementById('char-xp').value = d.xp||0;
     if (d.abilities) ABILITIES.forEach(a => { document.getElementById('ab-'+a.id).value = d.abilities[a.id]||0; });
-    if (d.skills) Object.assign(state.skills, d.skills);
+    if (d.skills) {
+      Object.assign(state.skills, d.skills);
+      SKILLS.filter(s => s.isLore).forEach(s => {
+        const el = document.getElementById('skloretype-' + s.id);
+        if (el) el.value = state.skills[s.id]?.loreType || '';
+      });
+    }
     if (d.percProf) { state.percProf=d.percProf; setPercProf(d.percProf); }
     if (d.saves) {
       Object.keys(d.saves).forEach(s => { state.saves[s]=d.saves[s]; setSaveProf(s,d.saves[s].prof); });
