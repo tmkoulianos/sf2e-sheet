@@ -236,24 +236,64 @@
   @media (max-width: 900px) {
     .sheet-body { grid-template-columns: 1fr; padding: 8px; gap: 8px; }
     .sheet-header { padding: 0 0.75rem; gap: 0.5rem; height: 48px; }
-    .sheet-header h1 { font-size: 16px; }
-    .btn { padding: 5px 10px; font-size: 11px; }
+    .sheet-header h1 { font-size: 17px; }
+    .btn { padding: 7px 14px; font-size: 12px; }
     .field-row.cols-2, .field-row.cols-3 { grid-template-columns: 1fr 1fr; }
-    .filter-btn { min-width: 26px; min-height: 26px; font-size: 11px; }
-    .skill-row { gap: 4px; }
-    .card-body { padding: 8px 10px; }
+    .filter-btn { min-width: 30px; min-height: 30px; font-size: 12px; }
+    .skill-row { gap: 6px; }
+    .card-body { padding: 10px 12px; }
+    body { font-size: 14px; }
+    .card-title { font-size: 13px; padding: 7px 12px; }
+    .card-title .tag { font-size: 11px; }
+    .auto-badge { font-size: 10px; padding: 2px 6px; }
+    .field label { font-size: 11px; }
+    .field input[type=text], .field input[type=number], .field select, .field textarea { font-size: 15px; padding: 7px 9px; }
+    .field textarea { font-size: 13px; }
+    .skill-name { font-size: 13px; }
+    .skill-ability-tag { font-size: 11px; }
+    .skill-lore-type { font-size: 12px; width: 72px; }
+    .skill-misc-in { font-size: 12px; }
+    .skill-prof-btn { width: 22px; height: 22px; font-size: 10px; }
+    .save-name { font-size: 13px; }
+    .save-prof { font-size: 11px; }
+    .save-misc-in { font-size: 12px; width: 38px; }
+    .attack-header span, .equip-header span { font-size: 11px; }
+    .atk-in, .eq-in { font-size: 13px; padding: 5px 6px; }
+    .eq-total { font-size: 12px; }
+    .cf-table { font-size: 12px; }
+    .cf-table th { font-size: 11px; }
+    .cf-lv { font-size: 11px; }
+    .cf-tag { font-size: 10px; }
+    .spell-rank-num, .spell-rank-label { font-size: 12px; }
+    .spell-entry-row, .spell-entry-row input[type=text] { font-size: 13px; }
+    .cond-item { font-size: 12px; }
+    .btn-add { font-size: 13px; padding: 7px; }
+    .section-label { font-size: 11px; }
+    .notes-area { font-size: 13px; }
+    .pl-item { font-size: 11px; }
+    .feat-entry input[type=text] { font-size: 14px; }
+    .feat-entry textarea { font-size: 12px; }
+    .level-badge label { font-size: 12px; }
+    .ability-box .ab-name { font-size: 12px; }
+    .ability-box .ab-mod { font-size: 13px; }
+    .ability-box input[type=number] { font-size: 20px; }
+    .hp-box .hp-label, .ac-box .ac-label, .stat-box .stat-label { font-size: 11px; }
+    .hp-max-label { font-size: 12px; }
+    .hp-max-in { font-size: 13px; }
+    .stat-box .stat-sub { font-size: 11px; }
+    .boost-note { font-size: 10px; }
   }
   @media (max-width: 480px) {
-    .sheet-header { height: 44px; }
-    .sheet-header h1 { font-size: 13px; letter-spacing: 0.06em; }
+    .sheet-header { height: 48px; }
+    .sheet-header h1 { font-size: 15px; letter-spacing: 0.06em; }
     .field-row.cols-3 { grid-template-columns: 1fr 1fr; }
-    .field label { font-size: 9px; }
-    .field input, .field select, .field textarea { font-size: 12px; padding: 4px 6px; }
+    .field label { font-size: 11px; }
+    .field input, .field select, .field textarea { font-size: 15px; padding: 6px 8px; }
     .ability-box { padding: 6px 4px; }
-    .ability-box input[type=number] { font-size: 18px; }
-    .card-title { font-size: 11px; padding: 5px 10px; }
-    .stat-val { font-size: 28px !important; }
-    .equip-header span, .atk-header span { font-size: 9px; }
+    .ability-box input[type=number] { font-size: 19px; }
+    .card-title { font-size: 12px; padding: 6px 10px; }
+    .stat-val { font-size: 30px !important; }
+    .equip-header span, .atk-header span { font-size: 10px; }
   }
   /* Safe area insets for notched phones */
   @supports (padding: env(safe-area-inset-bottom)) {
@@ -1419,7 +1459,7 @@ const state = {
 //  INIT
 // ══════════════════════════════════
 
-const APP_BUILD_DATE = '2026-06-29B';
+const APP_BUILD_DATE = '2026-06-29';
 
 function init() {
   buildAbilityGrid();
