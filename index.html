@@ -304,6 +304,10 @@
     .equip-header span, .atk-header span { font-size: 10px; }
   }
   /* Safe area insets for notched phones */
+  @supports (padding: env(safe-area-inset-top)) {
+    body { padding-top: env(safe-area-inset-top); }
+    .sheet-header { top: env(safe-area-inset-top); }
+  }
   @supports (padding: env(safe-area-inset-bottom)) {
     body { padding-bottom: env(safe-area-inset-bottom); }
     .sheet-header { padding-left: max(0.75rem, env(safe-area-inset-left));
@@ -1487,7 +1491,7 @@ const state = {
 //  INIT
 // ══════════════════════════════════
 
-const APP_BUILD_DATE = '2026-06-29 Rev B';
+const APP_BUILD_DATE = '2026-06-29 Rev C';
 
 
 // ══════════════════════════════════════════════
