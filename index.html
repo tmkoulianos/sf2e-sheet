@@ -66,6 +66,11 @@
   .card-title { background: var(--panel); border-bottom: 1px solid var(--border); padding: 6px 12px; font-family: var(--head); font-size: 15px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); display: flex; align-items: center; gap: 6px; cursor: pointer; user-select: none; }
   .card-title .chevron { margin-left: auto; font-size: 13px; color: var(--text-muted); transition: transform 0.2s; flex-shrink: 0; }
   .card-title .chevron.collapsed { transform: rotate(-90deg); }
+  .drag-handle { cursor: grab; padding: 0 4px; margin-left: 6px; color: var(--text-muted); font-size: 15px; line-height: 1; letter-spacing: -1px; touch-action: none; }
+  .drag-handle:active { cursor: grabbing; }
+  .card-ghost { opacity: 0.35; }
+  .card.sortable-chosen { border-color: var(--accent-dim); }
+  .card.sortable-drag { box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
   .card-body-wrap { overflow: hidden; transition: max-height 0.25s ease, opacity 0.2s ease; max-height: 4000px; opacity: 1; }
   .card-body-wrap.collapsed { max-height: 0 !important; opacity: 0; }
   .prof-legend-wrap { overflow: hidden; transition: max-height 0.25s ease, opacity 0.2s ease; max-height: 4000px; opacity: 1; }
@@ -335,8 +340,8 @@
   <div class="col">
 
     <!-- Identity -->
-    <div class="card">
-      <div class="card-title" id="card-character-title" onclick="toggleCard('card-character')">Character<span class="chevron">▾</span></div>
+    <div class="card" id="card-character">
+      <div class="card-title" id="card-character-title" onclick="toggleCard('card-character')"><span class="drag-handle" onclick="event.stopPropagation()" title="Drag to reorder">⋮⋮</span>Character<span class="chevron">▾</span></div>
       <div class="card-body-wrap" id="card-character-body"><div class="card-body">
         <div class="field"><label>Name</label><input type="text" id="char-name" placeholder="Character name"></div>
         <div class="field-row cols-2">
@@ -546,7 +551,7 @@
         <div class="field-row cols-2">
           <div class="field">
             <label id="subclass-label">Subclass</label>
-            <select id="char-subclass"><option value="">— Select class first —</option></select>
+            <select id="char-subclass" onchange="onSubclassChange()"><option value="">— Select class first —</option></select>
           </div>
           <div id="anchor-field" style="display:none;" class="field">
             <label>Anchor</label>
@@ -568,8 +573,8 @@
     </div>
 
     <!-- Ability Scores -->
-    <div class="card">
-      <div class="card-title" id="card-abilities-title" onclick="toggleCard('card-abilities')">Ability Scores <span class="auto-badge">boosts at 1, 5, 10, 15, 20</span><span class="chevron">▾</span></div>
+    <div class="card" id="card-abilities">
+      <div class="card-title" id="card-abilities-title" onclick="toggleCard('card-abilities')"><span class="drag-handle" onclick="event.stopPropagation()" title="Drag to reorder">⋮⋮</span>Ability Scores <span class="auto-badge">boosts at 1, 5, 10, 15, 20</span><span class="chevron">▾</span></div>
       <div class="card-body-wrap" id="card-abilities-body">
       <div class="card-body">
         <div class="ability-grid" id="ability-grid"></div>
@@ -578,8 +583,8 @@
     </div>
 
     <!-- HP -->
-    <div class="card">
-      <div class="card-title" id="card-hp-title" onclick="toggleCard('card-hp')">Hit Points <span class="auto-badge">auto</span><span class="chevron">▾</span></div>
+    <div class="card" id="card-hp">
+      <div class="card-title" id="card-hp-title" onclick="toggleCard('card-hp')"><span class="drag-handle" onclick="event.stopPropagation()" title="Drag to reorder">⋮⋮</span>Hit Points <span class="auto-badge">auto</span><span class="chevron">▾</span></div>
       <div class="card-body-wrap" id="card-hp-body"><div class="card-body">
         <div class="hp-block">
           <div class="hp-box">
@@ -606,8 +611,8 @@
     </div>
 
     <!-- Defenses -->
-    <div class="card">
-      <div class="card-title" id="card-defenses-title" onclick="toggleCard('card-defenses')">Defenses<span class="chevron">▾</span></div>
+    <div class="card" id="card-defenses">
+      <div class="card-title" id="card-defenses-title" onclick="toggleCard('card-defenses')"><span class="drag-handle" onclick="event.stopPropagation()" title="Drag to reorder">⋮⋮</span>Defenses<span class="chevron">▾</span></div>
       <div class="card-body-wrap" id="card-defenses-body"><div class="card-body">
         <div class="ac-grid">
           <div class="ac-box">
@@ -647,8 +652,8 @@
     </div>
 
     <!-- Perception & Initiative -->
-    <div class="card">
-      <div class="card-title" id="card-perception-title" onclick="toggleCard('card-perception')">Perception &amp; Initiative <span class="auto-badge">auto</span><span class="chevron">▾</span></div>
+    <div class="card" id="card-perception">
+      <div class="card-title" id="card-perception-title" onclick="toggleCard('card-perception')"><span class="drag-handle" onclick="event.stopPropagation()" title="Drag to reorder">⋮⋮</span>Perception &amp; Initiative <span class="auto-badge">auto</span><span class="chevron">▾</span></div>
       <div class="card-body-wrap" id="card-perception-body"><div class="card-body">
         <div class="perc-init-row">
           <div class="stat-box">
@@ -681,8 +686,8 @@
     </div>
 
     <!-- Saving Throws -->
-    <div class="card">
-      <div class="card-title" id="card-saves-title" onclick="toggleCard('card-saves')">Saving Throws <span class="auto-badge">auto</span><span class="chevron">▾</span></div>
+    <div class="card" id="card-saves">
+      <div class="card-title" id="card-saves-title" onclick="toggleCard('card-saves')"><span class="drag-handle" onclick="event.stopPropagation()" title="Drag to reorder">⋮⋮</span>Saving Throws <span class="auto-badge">auto</span><span class="chevron">▾</span></div>
       <div class="card-body-wrap" id="card-saves-body"><div class="card-body">
         <div id="saves-container"></div>
       </div></div>
@@ -694,8 +699,8 @@
   <div class="col">
 
     <!-- Skills -->
-    <div class="card">
-      <div class="card-title" id="card-skills-title" onclick="toggleCard('card-skills')">
+    <div class="card" id="card-skills">
+      <div class="card-title" id="card-skills-title" onclick="toggleCard('card-skills')"><span class="drag-handle" onclick="event.stopPropagation()" title="Drag to reorder">⋮⋮</span>
         Skills
         <span class="auto-badge">auto</span>
         <span class="tag" id="skill-inc-tag">increases: —</span>
@@ -718,8 +723,8 @@
     </div>
 
     <!-- Attacks -->
-    <div class="card">
-      <div class="card-title" id="card-attacks-title" onclick="toggleCard('card-attacks')">Attacks <span class="tag" id="atk-bonus-tag">Atk: —</span><span class="chevron">▾</span></div>
+    <div class="card" id="card-attacks">
+      <div class="card-title" id="card-attacks-title" onclick="toggleCard('card-attacks')"><span class="drag-handle" onclick="event.stopPropagation()" title="Drag to reorder">⋮⋮</span>Attacks <span class="tag" id="atk-bonus-tag">Atk: —</span><span class="chevron">▾</span></div>
       <div class="card-body-wrap" id="card-attacks-body"><div class="card-body">
         <div class="attack-header">
           <span>Weapon</span><span>Bonus</span><span>Damage</span><span>Traits</span><span>Bulk</span><span></span>
@@ -730,8 +735,8 @@
     </div>
 
     <!-- Class Features -->
-    <div class="card">
-      <div class="card-title" id="card-classfeatures-title" onclick="toggleCard('card-classfeatures')">Class Features <span class="auto-badge">auto</span><span class="chevron">▾</span></div>
+    <div class="card" id="card-classfeatures">
+      <div class="card-title" id="card-classfeatures-title" onclick="toggleCard('card-classfeatures')"><span class="drag-handle" onclick="event.stopPropagation()" title="Drag to reorder">⋮⋮</span>Class Features <span class="auto-badge">auto</span><span class="chevron">▾</span></div>
       <div class="card-body-wrap" id="card-classfeatures-body"><div class="card-body" style="padding:0;">
         <div id="cf-info" style="padding:8px 12px;font-size:11px;color:var(--text-muted);">Select a class to see features.</div>
         <div class="scrollable" style="max-height:280px;"><table class="cf-table" id="cf-table" style="display:none;"><thead><tr><th>Lvl</th><th>Features</th></tr></thead><tbody id="cf-body"></tbody></table></div>
@@ -739,8 +744,8 @@
     </div>
 
     <!-- Custom Feats -->
-    <div class="card">
-      <div class="card-title" id="card-feats-title" onclick="toggleCard('card-feats')">Feats &amp; Abilities<span class="chevron collapsed">▾</span></div>
+    <div class="card" id="card-feats">
+      <div class="card-title" id="card-feats-title" onclick="toggleCard('card-feats')"><span class="drag-handle" onclick="event.stopPropagation()" title="Drag to reorder">⋮⋮</span>Feats &amp; Abilities<span class="chevron collapsed">▾</span></div>
       <div class="card-body-wrap collapsed" id="card-feats-body" data-collapsed="true"><div class="card-body">
         <div id="feats-container"></div>
         <button class="btn-add" onclick="addFeat()">+ Add feat / ability</button>
@@ -753,8 +758,8 @@
   <div class="col">
 
     <!-- Class DC -->
-    <div class="card">
-      <div class="card-title" id="card-classdc-title" onclick="toggleCard('card-classdc')">Class DC <span class="auto-badge">auto</span><span class="chevron">▾</span></div>
+    <div class="card" id="card-classdc">
+      <div class="card-title" id="card-classdc-title" onclick="toggleCard('card-classdc')"><span class="drag-handle" onclick="event.stopPropagation()" title="Drag to reorder">⋮⋮</span>Class DC <span class="auto-badge">auto</span><span class="chevron">▾</span></div>
       <div class="card-body-wrap" id="card-classdc-body"><div class="card-body">
         <div class="field-row cols-2" style="align-items:flex-end;gap:12px;">
           <div style="display:flex;flex-direction:column;gap:8px;flex:1;">
@@ -790,8 +795,8 @@
     </div>
 
     <!-- Spells -->
-    <div class="card">
-      <div class="card-title" id="card-spells-title" onclick="toggleCard('card-spells')">Spells <span class="tag" id="spell-dc-tag">DC —</span><span class="chevron collapsed">▾</span><span class="chevron collapsed">▾</span></div>
+    <div class="card" id="card-spells">
+      <div class="card-title" id="card-spells-title" onclick="toggleCard('card-spells')"><span class="drag-handle" onclick="event.stopPropagation()" title="Drag to reorder">⋮⋮</span>Spells <span class="tag" id="spell-dc-tag">DC —</span><span class="chevron collapsed">▾</span></div>
       <div class="card-body-wrap collapsed" id="card-spells-body" data-collapsed="true"><div class="card-body">
         <div class="field-row cols-3">
           <div class="field"><label>Spell Atk</label><input type="number" id="spell-atk" value="0" oninput="updateSpellDC()"></div>
@@ -802,13 +807,25 @@
           </div>
           <div class="field"><label>Spell DC</label><div style="font-family:var(--mono);font-size:16px;font-weight:700;color:var(--accent);padding:5px 0;" id="spell-dc-val">10</div></div>
         </div>
+        <div style="margin-bottom:10px;">
+          <div class="spell-rank-hdr">
+            <div class="spell-rank-num">F</div>
+            <div class="spell-rank-label">Focus Spells</div>
+            <div style="display:flex;align-items:center;gap:5px;font-family:var(--mono);color:var(--accent);white-space:nowrap;" title="Focus Points = half level, rounded up">
+              <span id="focus-points-val" style="font-size:16px;font-weight:700;">1</span>
+              <span style="color:var(--text-muted);font-size:11px;">FP</span>
+            </div>
+          </div>
+          <div id="focus-spells-container"></div>
+          <button class="btn-add" onclick="addFocusSpell()">+ Add focus spell</button>
+        </div>
         <div id="spells-container" class="scrollable" style="max-height:300px;"></div>
       </div></div>
     </div>
 
     <!-- Equipment -->
-    <div class="card">
-      <div class="card-title" id="card-equipment-title" onclick="toggleCard('card-equipment')">Equipment<span class="chevron">▾</span></div>
+    <div class="card" id="card-equipment">
+      <div class="card-title" id="card-equipment-title" onclick="toggleCard('card-equipment')"><span class="drag-handle" onclick="event.stopPropagation()" title="Drag to reorder">⋮⋮</span>Equipment<span class="chevron">▾</span></div>
       <div class="card-body-wrap" id="card-equipment-body"><div class="card-body">
         <div class="field-row" style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
           <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-dim);white-space:nowrap;cursor:pointer;">
@@ -838,8 +855,8 @@
     </div>
 
     <!-- Conditions -->
-    <div class="card">
-      <div class="card-title" id="card-conditions-title" onclick="toggleCard('card-conditions')">Conditions<span class="chevron collapsed">▾</span></div>
+    <div class="card" id="card-conditions">
+      <div class="card-title" id="card-conditions-title" onclick="toggleCard('card-conditions')"><span class="drag-handle" onclick="event.stopPropagation()" title="Drag to reorder">⋮⋮</span>Conditions<span class="chevron collapsed">▾</span></div>
       <div class="card-body-wrap collapsed" id="card-conditions-body" data-collapsed="true"><div class="card-body">
         <div class="cond-grid" id="cond-grid"></div>
         <div class="field" style="margin-top:8px;"><label>Notes</label><textarea class="notes-area" id="cond-notes" placeholder="Status effects, ongoing abilities…"></textarea></div>
@@ -847,8 +864,8 @@
     </div>
 
     <!-- Notes -->
-    <div class="card">
-      <div class="card-title" id="card-notes-title" onclick="toggleCard('card-notes')">Notes<span class="chevron collapsed">▾</span></div>
+    <div class="card" id="card-notes">
+      <div class="card-title" id="card-notes-title" onclick="toggleCard('card-notes')"><span class="drag-handle" onclick="event.stopPropagation()" title="Drag to reorder">⋮⋮</span>Notes<span class="chevron collapsed">▾</span></div>
       <div class="card-body-wrap collapsed" id="card-notes-body" data-collapsed="true"><div class="card-body">
         <div class="field">
           <label>Languages</label>
@@ -864,6 +881,7 @@
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
 <script>
 // ══════════════════════════════════
 //  SF2e DATA (from Archives of Nethys)
@@ -1129,8 +1147,17 @@ const SUBCLASSES = {
       'Analyst',        // Arcane / Computers — sees the hidden code of reality
       'Anomaly',        // Arcane / Deception — existence defies normal parameters
       'Gap Influenced', // Occult / Society — shaped by the Gap
+      'Precog',         // Occult / ? — temporal precognition; initial warp spell: Warp Time
     ]
   },
+};
+
+// Each paradox's 1st-level initial warp spell (Witchwarper's focus spell), per AoN
+const PARADOX_WARP_SPELL = {
+  'Analyst':        'Warp Probability',
+  'Anomaly':         'Warp Terrain',
+  'Gap Influenced':  'Warp Presence',
+  'Precog':          'Warp Time',
 };
 
 // SF2e ancestries + heritages — verified from Archives of Nethys
@@ -1489,12 +1516,59 @@ const state = {
 //  INIT
 // ══════════════════════════════════
 
-const APP_BUILD_DATE = '2026-06-30 Rev A';
+const APP_BUILD_DATE = '2026-06-29';
 
 
 // ══════════════════════════════════════════════
 //  COLLAPSIBLE SECTIONS
 // ══════════════════════════════════════════════
+
+// ══════════════════════════════════════════════
+//  DRAG-TO-REORDER CARDS
+// ══════════════════════════════════════════════
+const LS_LAYOUT_KEY = 'sf2e_card_layout';
+
+function saveCardLayout() {
+  const cols = document.querySelectorAll('.sheet-body > .col');
+  const layout = Array.from(cols).map(col =>
+    Array.from(col.children).filter(el => el.classList.contains('card')).map(el => el.id)
+  );
+  try { localStorage.setItem(LS_LAYOUT_KEY, JSON.stringify(layout)); } catch(e) {}
+}
+
+function loadCardLayout() {
+  try {
+    const saved = localStorage.getItem(LS_LAYOUT_KEY);
+    if (!saved) return;
+    const layout = JSON.parse(saved);
+    const cols = document.querySelectorAll('.sheet-body > .col');
+    layout.forEach((ids, colIdx) => {
+      const col = cols[colIdx];
+      if (!col) return;
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) col.appendChild(el); // re-appending an existing node moves it, preserving its content
+      });
+    });
+  } catch(e) { console.warn('Card layout restore failed:', e); }
+}
+
+function initCardDrag() {
+  if (typeof Sortable === 'undefined') {
+    console.warn('SortableJS failed to load — drag-to-reorder disabled, sheet still works normally.');
+    return;
+  }
+  document.querySelectorAll('.sheet-body > .col').forEach(col => {
+    new Sortable(col, {
+      group: 'sf2e-cards',
+      handle: '.drag-handle',
+      animation: 150,
+      ghostClass: 'card-ghost',
+      onEnd: saveCardLayout
+    });
+  });
+}
+
 const CARD_IDS = [
   'card-character','card-abilities','card-hp','card-defenses',
   'card-perception','card-saves','card-skills','card-attacks',
@@ -1561,7 +1635,9 @@ function init() {
   buildSkills();
   buildSaves();
   buildConditions();
+  buildFocusSpells(1);
   buildSpells();
+  updateFocusPoints();
   buildEquip(5);
   buildAttacks(3);
   recalcAll();
@@ -1572,6 +1648,9 @@ function init() {
     const saved = localStorage.getItem(LS_KEY);
     if (saved) applySheet(JSON.parse(saved));
   } catch(e) { console.warn('localStorage load failed:', e); }
+  // Restore custom card order/layout, then wire up drag-to-reorder
+  loadCardLayout();
+  initCardDrag();
   // Restore collapsed/expanded state of sections
   loadCardState();
 }
@@ -1579,6 +1658,10 @@ function init() {
 // ══════════════════════════════════
 //  HELPERS
 // ══════════════════════════════════
+
+function escAttr(s) {
+  return String(s ?? '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+}
 
 function getLevel() { return Math.min(20, Math.max(1, parseInt(document.getElementById('char-level').value)||1)); }
 function getAb(id) { return parseInt(document.getElementById('ab-'+id).value)||0; }
@@ -1763,6 +1846,20 @@ function onClassChange() {
   recalcAll();
 }
 
+function onSubclassChange() {
+  const cls = document.getElementById('char-class').value;
+  const sub = document.getElementById('char-subclass').value;
+  if (cls !== 'witchwarper') { autoSave(); return; }
+  const warpSpell = PARADOX_WARP_SPELL[sub];
+  if (!warpSpell) { autoSave(); return; }
+  const firstRow = document.querySelector('#focus-spells-container .spell-entry-row');
+  if (firstRow) {
+    const nameInput = firstRow.querySelector('input[type=text]');
+    if (nameInput) nameInput.value = warpSpell;
+  }
+  autoSave();
+}
+
 function updateCFTable() {
   const cls = document.getElementById('char-class').value;
   const data = CLASSES[cls];
@@ -1780,28 +1877,81 @@ function updateCFTable() {
 //  SPELLS
 // ══════════════════════════════════
 
+function buildFocusSpells(n) { for (let i=0;i<n;i++) addFocusSpell(); }
+
+function addFocusSpell(data = {}) {
+  const id = (Date.now()+Math.random()).toString().replace('.','');
+  const row = document.createElement('div');
+  row.className = 'spell-entry-row'; row.id = 'focus-'+id;
+  const checked = data.used ? 'checked' : '';
+  row.innerHTML = `
+    <input type="checkbox" class="spell-prepared-chk" title="Used" ${checked} onchange="autoSave()">
+    <input type="text" placeholder="Focus spell name…" style="flex:1;" value="${escAttr(data.name)}" oninput="autoSave()">
+    <button class="btn-del" onclick="document.getElementById('focus-${id}').remove();autoSave()">✕</button>
+  `;
+  document.getElementById('focus-spells-container').appendChild(row);
+}
+
+// Focus Points = half character level, rounded up (fixed, not player-editable)
+function updateFocusPoints() {
+  const level = getLevel();
+  const fp = Math.ceil(level / 2);
+  const el = document.getElementById('focus-points-val');
+  if (el) el.textContent = fp;
+}
+
 function buildSpells() {
   const c = document.getElementById('spells-container');
   c.innerHTML = '';
   for (let rank=0; rank<=9; rank++) {
     const d = document.createElement('div');
     d.style.marginBottom='8px';
-    const slotsHtml = rank>0 ? [0,1,2,3].map(()=>
-      `<div class="spell-slot" onclick="this.classList.toggle('used')"></div>`).join('') : '';
+    d.dataset.rank = rank;
+    // Build the max possible slot boxes / entry rows; visibility is toggled
+    // separately by updateSpellSlotVisibility() so typed spell names and
+    // used/prepared state aren't wiped out when level or class changes.
+    const slotsHtml = rank>0 ? [0,1,2,3].map(i =>
+      `<div class="spell-slot" data-slot-idx="${i}" onclick="this.classList.toggle('used');autoSave()"></div>`).join('') : '';
+    const entryCount = rank===0 ? 5 : 3; // cantrips: up to 5 rows (witchwarper); others: 3
+    const entriesHtml = Array.from({length: entryCount}, (_, i) => `
+        <div class="spell-entry-row" data-entry-idx="${i}">
+          <input type="checkbox" class="spell-prepared-chk" title="Prepared/used" onchange="autoSave()">
+          <input type="text" placeholder="Spell name…" oninput="autoSave()">
+        </div>`).join('');
     d.innerHTML = `
       <div class="spell-rank-hdr">
         <div class="spell-rank-num">${rank===0?'C':rank}</div>
         <div class="spell-rank-label">${rank===0?'Cantrips':'Rank '+rank}</div>
         <div class="spell-slots-row">${slotsHtml}</div>
       </div>
-      ${[0,1,2].map(()=>`
-        <div class="spell-entry-row">
-          <input type="checkbox" class="spell-prepared-chk" title="Prepared/used">
-          <input type="text" placeholder="Spell name…">
-        </div>`).join('')}
+      ${entriesHtml}
     `;
     c.appendChild(d);
   }
+  updateSpellSlotVisibility();
+}
+
+// Witchwarper-specific spell slot rules:
+//  - Cantrips: 5 total slots (base 3 + 2 extra)
+//  - Odd character level: 3 spell slots shown per rank
+//  - Even character level: 1 spell slot shown per rank
+// All other classes keep the standard 3 cantrips / 4 slots-per-rank layout.
+function updateSpellSlotVisibility() {
+  const cls = document.getElementById('char-class')?.value;
+  const level = getLevel();
+  const isWitchwarper = cls === 'witchwarper';
+
+  const cantripMax = isWitchwarper ? 5 : 3;
+  document.querySelectorAll('#spells-container > div[data-rank="0"] .spell-entry-row').forEach(row => {
+    const idx = parseInt(row.dataset.entryIdx, 10);
+    row.style.display = idx < cantripMax ? '' : 'none';
+  });
+
+  const visibleSlots = isWitchwarper ? (level % 2 === 1 ? 3 : 1) : 4;
+  document.querySelectorAll('#spells-container > div:not([data-rank="0"]) .spell-slot').forEach(slot => {
+    const idx = parseInt(slot.dataset.slotIdx, 10);
+    slot.style.display = idx < visibleSlots ? '' : 'none';
+  });
 }
 
 function updateSpellDC() {
@@ -1821,16 +1971,16 @@ function updateSpellDC() {
 
 function buildAttacks(n) { for(let i=0;i<n;i++) addAttack(); }
 
-function addAttack() {
+function addAttack(data = {}) {
   const id = (Date.now()+Math.random()).toString().replace('.','');
   const row = document.createElement('div');
   row.className = 'attack-row-g'; row.id = 'atk-'+id;
   row.innerHTML = `
-    <input class="atk-in" type="text" placeholder="Weapon name">
-    <input class="atk-in" type="text" placeholder="+0">
-    <input class="atk-in" type="text" placeholder="1d6 P">
-    <input class="atk-in" type="text" placeholder="Traits">
-    <input class="atk-in atk-bulk" type="number" value="0" min="0" step="0.1" oninput="recalcBulk()" title="Weapon bulk">
+    <input class="atk-in" type="text" placeholder="Weapon name" value="${escAttr(data.name)}" oninput="autoSave()">
+    <input class="atk-in" type="text" placeholder="+0" value="${escAttr(data.bonus)}" oninput="autoSave()">
+    <input class="atk-in" type="text" placeholder="1d6 P" value="${escAttr(data.damage)}" oninput="autoSave()">
+    <input class="atk-in" type="text" placeholder="Traits" value="${escAttr(data.traits)}" oninput="autoSave()">
+    <input class="atk-in atk-bulk" type="number" value="${data.bulk !== undefined ? data.bulk : 0}" min="0" step="0.1" oninput="recalcBulk()" title="Weapon bulk">
     <button class="btn-del" onclick="document.getElementById('atk-${id}').remove();recalcBulk()">✕</button>
   `;
   document.getElementById('attacks-container').appendChild(row);
@@ -1842,14 +1992,16 @@ function addAttack() {
 
 function buildEquip(n) { for(let i=0;i<n;i++) addEquip(); }
 
-function addEquip() {
+function addEquip(data = {}) {
   const id = (Date.now()+Math.random()).toString().replace('.','');
   const row = document.createElement('div');
   row.className = 'equip-row-g'; row.id = 'eq-'+id;
+  const qty = data.qty !== undefined ? data.qty : 1;
+  const bulkEa = data.bulkEa !== undefined ? data.bulkEa : 0;
   row.innerHTML = `
-    <input class="eq-in" type="text" placeholder="Item name">
-    <input class="eq-in eq-qty" type="number" value="1" min="0" oninput="calcRowBulk('${id}')">
-    <input class="eq-in eq-bulk-ea" type="number" value="0" min="0" step="0.1" oninput="calcRowBulk('${id}')">
+    <input class="eq-in" type="text" placeholder="Item name" value="${escAttr(data.name)}" oninput="autoSave()">
+    <input class="eq-in eq-qty" type="number" value="${qty}" min="0" oninput="calcRowBulk('${id}')">
+    <input class="eq-in eq-bulk-ea" type="number" value="${bulkEa}" min="0" step="0.1" oninput="calcRowBulk('${id}')">
     <span class="eq-total" id="eq-total-${id}">1</span>
     <button class="btn-del" onclick="document.getElementById('eq-${id}').remove();recalcBulk()">✕</button>
   `;
@@ -1918,14 +2070,14 @@ function recalcBulk() {
 //  FEATS
 // ══════════════════════════════════
 
-function addFeat() {
-  const id = Date.now();
+function addFeat(data = {}) {
+  const id = (Date.now()+Math.random()).toString().replace('.','');
   const div = document.createElement('div');
   div.className = 'feat-entry'; div.id = 'feat-'+id;
   div.innerHTML = `
-    <input type="text" placeholder="Feat / ability name">
-    <textarea placeholder="Description or notes…" rows="2"></textarea>
-    <button class="feat-del" onclick="document.getElementById('feat-${id}').remove()">✕</button>
+    <input type="text" placeholder="Feat / ability name" value="${escAttr(data.name)}" oninput="autoSave()">
+    <textarea placeholder="Description or notes…" rows="2" oninput="autoSave()">${escAttr(data.desc)}</textarea>
+    <button class="feat-del" onclick="document.getElementById('feat-${id}').remove();autoSave()">✕</button>
   `;
   document.getElementById('feats-container').appendChild(div);
 }
@@ -1950,7 +2102,7 @@ function updateHeritage() {
 function buildConditions() {
   document.getElementById('cond-grid').innerHTML = CONDITIONS.map(c => `
     <label class="cond-item">
-      <input type="checkbox" onchange="this.parentElement.classList.toggle('active',this.checked)">
+      <input type="checkbox" data-cond="${escAttr(c)}" onchange="this.parentElement.classList.toggle('active',this.checked);autoSave()">
       ${c}
     </label>
   `).join('');
@@ -1989,6 +2141,8 @@ function recalcAC() {
 
 function recalcAll() {
   autoSave();
+  updateSpellSlotVisibility();
+  updateFocusPoints();
   const level = getLevel();
   const cls = document.getElementById('char-class').value;
   const data = CLASSES[cls];
@@ -2105,6 +2259,62 @@ function collectSheet() {
     notesPerson: document.getElementById('notes-person').value,
     notesBack: document.getElementById('notes-back').value,
     notesAllies: document.getElementById('notes-allies').value,
+
+    // Dynamic list sections (weapons, equipment, feats, focus spells)
+    attacks: Array.from(document.querySelectorAll('#attacks-container .attack-row-g')).map(row => {
+      const ins = row.querySelectorAll('input');
+      return {
+        name: ins[0].value, bonus: ins[1].value, damage: ins[2].value,
+        traits: ins[3].value, bulk: ins[4].value
+      };
+    }),
+    equipment: Array.from(document.querySelectorAll('#equip-container .equip-row-g')).map(row => {
+      return {
+        name: row.querySelector('.eq-in').value,
+        qty: row.querySelector('.eq-qty').value,
+        bulkEa: row.querySelector('.eq-bulk-ea').value
+      };
+    }),
+    feats: Array.from(document.querySelectorAll('#feats-container .feat-entry')).map(div => {
+      return { name: div.querySelector('input').value, desc: div.querySelector('textarea').value };
+    }),
+    focusSpells: Array.from(document.querySelectorAll('#focus-spells-container .spell-entry-row')).map(row => {
+      return { used: row.querySelector('input[type=checkbox]').checked, name: row.querySelector('input[type=text]').value };
+    }),
+
+    // Spells container: cantrips + ranks 1-9 (entry text/checked, and per-rank slot "used" state)
+    spellEntries: (() => {
+      const out = {};
+      document.querySelectorAll('#spells-container .spell-entry-row').forEach(row => {
+        const parent = row.closest('[data-rank]');
+        if (!parent) return;
+        const key = parent.dataset.rank + '-' + row.dataset.entryIdx;
+        out[key] = {
+          used: row.querySelector('input[type=checkbox]').checked,
+          name: row.querySelector('input[type=text]').value
+        };
+      });
+      return out;
+    })(),
+    spellSlotsUsed: (() => {
+      const out = {};
+      document.querySelectorAll('#spells-container .spell-slot').forEach(slot => {
+        const parent = slot.closest('[data-rank]');
+        if (!parent) return;
+        const key = parent.dataset.rank + '-' + slot.dataset.slotIdx;
+        out[key] = slot.classList.contains('used');
+      });
+      return out;
+    })(),
+
+    // Conditions (checked state keyed by condition name)
+    conditions: (() => {
+      const out = {};
+      document.querySelectorAll('#cond-grid input[data-cond]').forEach(chk => {
+        out[chk.dataset.cond] = chk.checked;
+      });
+      return out;
+    })(),
   };
   return d;
 }
@@ -2245,6 +2455,58 @@ function applySheet(d) {
       if(d.sub)    document.getElementById('char-subclass').value = d.sub;
       if(d.anchor) document.getElementById('char-anchor').value = d.anchor;
     }, 0);
+
+    // ── Restore dynamic list sections ──
+    // Only clear + rebuild a section if saved data for it exists, so legacy
+    // saves (made before this field existed) keep their default starter rows
+    // instead of being wiped to empty.
+    if (Array.isArray(d.attacks)) {
+      document.getElementById('attacks-container').innerHTML = '';
+      d.attacks.forEach(a => addAttack(a));
+    }
+    if (Array.isArray(d.equipment)) {
+      document.getElementById('equip-container').innerHTML = '';
+      d.equipment.forEach(e => addEquip(e));
+    }
+    if (Array.isArray(d.feats)) {
+      document.getElementById('feats-container').innerHTML = '';
+      d.feats.forEach(f => addFeat(f));
+    }
+    if (Array.isArray(d.focusSpells)) {
+      document.getElementById('focus-spells-container').innerHTML = '';
+      d.focusSpells.forEach(fs => addFocusSpell(fs));
+    }
+
+    // Spells container (cantrips + ranks 1-9): restore entry text/checked and slot "used" state
+    if (d.spellEntries) {
+      document.querySelectorAll('#spells-container .spell-entry-row').forEach(row => {
+        const parent = row.closest('[data-rank]');
+        if (!parent) return;
+        const key = parent.dataset.rank + '-' + row.dataset.entryIdx;
+        const entry = d.spellEntries[key];
+        if (!entry) return;
+        row.querySelector('input[type=checkbox]').checked = !!entry.used;
+        row.querySelector('input[type=text]').value = entry.name || '';
+      });
+    }
+    if (d.spellSlotsUsed) {
+      document.querySelectorAll('#spells-container .spell-slot').forEach(slot => {
+        const parent = slot.closest('[data-rank]');
+        if (!parent) return;
+        const key = parent.dataset.rank + '-' + slot.dataset.slotIdx;
+        slot.classList.toggle('used', !!d.spellSlotsUsed[key]);
+      });
+    }
+
+    // Conditions
+    if (d.conditions) {
+      document.querySelectorAll('#cond-grid input[data-cond]').forEach(chk => {
+        const isChecked = !!d.conditions[chk.dataset.cond];
+        chk.checked = isChecked;
+        chk.parentElement.classList.toggle('active', isChecked);
+      });
+    }
+
     recalcAll();
     recalcBulk();
   } catch(err) { alert('Failed to load: '+err.message); }
