@@ -63,7 +63,13 @@
 
   /* CARDS */
   .card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
-  .card-title { background: var(--panel); border-bottom: 1px solid var(--border); padding: 6px 12px; font-family: var(--head); font-size: 13px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); display: flex; align-items: center; gap: 6px; }
+  .card-title { background: var(--panel); border-bottom: 1px solid var(--border); padding: 6px 12px; font-family: var(--head); font-size: 13px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); display: flex; align-items: center; gap: 6px; cursor: pointer; user-select: none; }
+  .card-title .chevron { margin-left: auto; font-size: 11px; color: var(--text-muted); transition: transform 0.2s; flex-shrink: 0; }
+  .card-title .chevron.collapsed { transform: rotate(-90deg); }
+  .card-body-wrap { overflow: hidden; transition: max-height 0.25s ease, opacity 0.2s ease; max-height: 4000px; opacity: 1; }
+  .card-body-wrap.collapsed { max-height: 0 !important; opacity: 0; }
+  .prof-legend-wrap { overflow: hidden; transition: max-height 0.25s ease, opacity 0.2s ease; max-height: 4000px; opacity: 1; }
+  .prof-legend-wrap.collapsed { max-height: 0 !important; opacity: 0; }
   .card-title .tag { margin-left: auto; font-size: 10px; font-weight: 400; color: var(--text-muted); font-family: var(--mono); letter-spacing: 0.06em; }
   .auto-badge { font-size: 9px; font-family: var(--mono); color: var(--accent); background: var(--accent-glow); border: 1px solid var(--accent-dim); border-radius: 3px; padding: 1px 5px; }
   .card-body { padding: 10px 12px; }
@@ -314,6 +320,8 @@
     <input type="number" id="char-level" value="1" min="1" max="20" oninput="recalcAll()">
   </div>
   <span id="autosave-badge" style="font-family:var(--mono);font-size:10px;color:var(--text-muted);white-space:nowrap;"></span>
+  <button class="btn secondary" onclick="expandAll()" title="Expand all sections">⊞</button>
+  <button class="btn secondary" onclick="collapseAll()" title="Collapse all sections">⊟</button>
   <button class="btn" onclick="forceSave()">Save</button>
   <button class="btn" onclick="exportJSON()">Export JSON</button>
   <button class="btn secondary" onclick="importJSON()">Import JSON</button>
@@ -326,8 +334,8 @@
 
     <!-- Identity -->
     <div class="card">
-      <div class="card-title">Character</div>
-      <div class="card-body">
+      <div class="card-title" id="card-character-title" onclick="toggleCard('card-character')">Character<span class="chevron">▾</span></div>
+      <div class="card-body-wrap" id="card-character-body"><div class="card-body">
         <div class="field"><label>Name</label><input type="text" id="char-name" placeholder="Character name"></div>
         <div class="field-row cols-2">
           <div class="field">
@@ -554,21 +562,23 @@
         </div>
         <div class="field"><label>Theme</label><input type="text" id="char-theme" placeholder="e.g. Spacefarer, Icon, Mercenary"></div>
         <div class="field"><label>XP</label><input type="number" id="char-xp" value="0"></div>
-      </div>
+      </div></div>
     </div>
 
     <!-- Ability Scores -->
     <div class="card">
-      <div class="card-title">Ability Scores <span class="auto-badge">boosts at 1, 5, 10, 15, 20</span></div>
+      <div class="card-title" id="card-abilities-title" onclick="toggleCard('card-abilities')">Ability Scores <span class="auto-badge">boosts at 1, 5, 10, 15, 20</span><span class="chevron">▾</span></div>
+      <div class="card-body-wrap" id="card-abilities-body">
       <div class="card-body">
         <div class="ability-grid" id="ability-grid"></div>
+      </div>
       </div>
     </div>
 
     <!-- HP -->
     <div class="card">
-      <div class="card-title">Hit Points <span class="auto-badge">auto</span></div>
-      <div class="card-body">
+      <div class="card-title" id="card-hp-title" onclick="toggleCard('card-hp')">Hit Points <span class="auto-badge">auto</span><span class="chevron">▾</span></div>
+      <div class="card-body-wrap" id="card-hp-body"><div class="card-body">
         <div class="hp-block">
           <div class="hp-box">
             <div class="hp-label">Current HP</div>
@@ -590,13 +600,13 @@
           <div class="field"><label>Dying</label><input type="number" id="dying-val" value="0" min="0" max="4"></div>
           <div class="field"><label>Wounded</label><input type="number" id="wounded-val" value="0" min="0"></div>
         </div>
-      </div>
+      </div></div>
     </div>
 
     <!-- Defenses -->
     <div class="card">
-      <div class="card-title">Defenses</div>
-      <div class="card-body">
+      <div class="card-title" id="card-defenses-title" onclick="toggleCard('card-defenses')">Defenses<span class="chevron">▾</span></div>
+      <div class="card-body-wrap" id="card-defenses-body"><div class="card-body">
         <div class="ac-grid">
           <div class="ac-box">
             <div class="ac-label">Armor Class</div>
@@ -631,13 +641,13 @@
           <div class="field"><label>Resistances / Immunities</label><input type="text" id="resistances" placeholder="e.g. Fire 5"></div>
         </div>
 
-      </div>
+      </div></div>
     </div>
 
     <!-- Perception & Initiative -->
     <div class="card">
-      <div class="card-title">Perception &amp; Initiative <span class="auto-badge">auto</span></div>
-      <div class="card-body">
+      <div class="card-title" id="card-perception-title" onclick="toggleCard('card-perception')">Perception &amp; Initiative <span class="auto-badge">auto</span><span class="chevron">▾</span></div>
+      <div class="card-body-wrap" id="card-perception-body"><div class="card-body">
         <div class="perc-init-row">
           <div class="stat-box">
             <div class="stat-label">Perception</div>
@@ -665,15 +675,15 @@
             <button class="filter-btn" id="perc-L" onclick="setPercProf('L')">L</button>
           </div>
         </div>
-      </div>
+      </div></div>
     </div>
 
     <!-- Saving Throws -->
     <div class="card">
-      <div class="card-title">Saving Throws <span class="auto-badge">auto</span></div>
-      <div class="card-body">
+      <div class="card-title" id="card-saves-title" onclick="toggleCard('card-saves')">Saving Throws <span class="auto-badge">auto</span><span class="chevron">▾</span></div>
+      <div class="card-body-wrap" id="card-saves-body"><div class="card-body">
         <div id="saves-container"></div>
-      </div>
+      </div></div>
     </div>
 
   </div>
@@ -683,11 +693,13 @@
 
     <!-- Skills -->
     <div class="card">
-      <div class="card-title">
+      <div class="card-title" id="card-skills-title" onclick="toggleCard('card-skills')">
         Skills
         <span class="auto-badge">auto</span>
         <span class="tag" id="skill-inc-tag">increases: —</span>
+        <span class="chevron">▾</span>
       </div>
+      <div class="card-body-wrap" id="card-skills-body">
       <div class="prof-legend">
         <div class="pl-item"><div class="pl-dot"></div>U</div>
         <div class="pl-item"><div class="pl-dot t"></div>T (+level+2)</div>
@@ -700,36 +712,37 @@
         <button class="filter-btn" onclick="filterSkills('trained', this)">Trained+</button>
       </div>
       <div class="scrollable card-body" style="padding-top:4px;" id="skills-container"></div>
+      </div>
     </div>
 
     <!-- Attacks -->
     <div class="card">
-      <div class="card-title">Attacks <span class="tag" id="atk-bonus-tag">Atk: —</span></div>
-      <div class="card-body">
+      <div class="card-title" id="card-attacks-title" onclick="toggleCard('card-attacks')">Attacks <span class="tag" id="atk-bonus-tag">Atk: —</span><span class="chevron">▾</span></div>
+      <div class="card-body-wrap" id="card-attacks-body"><div class="card-body">
         <div class="attack-header">
           <span>Weapon</span><span>Bonus</span><span>Damage</span><span>Traits</span><span>Bulk</span><span></span>
         </div>
         <div id="attacks-container"></div>
         <button class="btn-add" onclick="addAttack()">+ Add weapon</button>
-      </div>
+      </div></div>
     </div>
 
     <!-- Class Features -->
     <div class="card">
-      <div class="card-title">Class Features <span class="auto-badge">auto</span></div>
-      <div class="card-body" style="padding:0;">
+      <div class="card-title" id="card-classfeatures-title" onclick="toggleCard('card-classfeatures')">Class Features <span class="auto-badge">auto</span><span class="chevron">▾</span></div>
+      <div class="card-body-wrap" id="card-classfeatures-body"><div class="card-body" style="padding:0;">
         <div id="cf-info" style="padding:8px 12px;font-size:11px;color:var(--text-muted);">Select a class to see features.</div>
         <div class="scrollable" style="max-height:280px;"><table class="cf-table" id="cf-table" style="display:none;"><thead><tr><th>Lvl</th><th>Features</th></tr></thead><tbody id="cf-body"></tbody></table></div>
-      </div>
+      </div></div>
     </div>
 
     <!-- Custom Feats -->
     <div class="card">
-      <div class="card-title">Feats &amp; Abilities</div>
-      <div class="card-body">
+      <div class="card-title" id="card-feats-title" onclick="toggleCard('card-feats')">Feats &amp; Abilities<span class="chevron collapsed">▾</span></div>
+      <div class="card-body-wrap collapsed" id="card-feats-body" data-collapsed="true"><div class="card-body">
         <div id="feats-container"></div>
         <button class="btn-add" onclick="addFeat()">+ Add feat / ability</button>
-      </div>
+      </div></div>
     </div>
 
   </div>
@@ -739,8 +752,8 @@
 
     <!-- Class DC -->
     <div class="card">
-      <div class="card-title">Class DC <span class="auto-badge">auto</span></div>
-      <div class="card-body">
+      <div class="card-title" id="card-classdc-title" onclick="toggleCard('card-classdc')">Class DC <span class="auto-badge">auto</span><span class="chevron">▾</span></div>
+      <div class="card-body-wrap" id="card-classdc-body"><div class="card-body">
         <div class="field-row cols-2" style="align-items:flex-end;gap:12px;">
           <div style="display:flex;flex-direction:column;gap:8px;flex:1;">
             <div class="field">
@@ -771,13 +784,13 @@
             <div id="class-dc-breakdown" style="font-size:10px;color:var(--text-muted);font-family:var(--mono);margin-top:4px;">10 + 0 + 2 + 0</div>
           </div>
         </div>
-      </div>
+      </div></div>
     </div>
 
     <!-- Spells -->
     <div class="card">
-      <div class="card-title">Spells <span class="tag" id="spell-dc-tag">DC —</span></div>
-      <div class="card-body">
+      <div class="card-title" id="card-spells-title" onclick="toggleCard('card-spells')">Spells <span class="tag" id="spell-dc-tag">DC —</span><span class="chevron collapsed">▾</span><span class="chevron collapsed">▾</span></div>
+      <div class="card-body-wrap collapsed" id="card-spells-body" data-collapsed="true"><div class="card-body">
         <div class="field-row cols-3">
           <div class="field"><label>Spell Atk</label><input type="number" id="spell-atk" value="0" oninput="updateSpellDC()"></div>
           <div class="field"><label>Key Ability</label>
@@ -788,13 +801,13 @@
           <div class="field"><label>Spell DC</label><div style="font-family:var(--mono);font-size:16px;font-weight:700;color:var(--accent);padding:5px 0;" id="spell-dc-val">10</div></div>
         </div>
         <div id="spells-container" class="scrollable" style="max-height:300px;"></div>
-      </div>
+      </div></div>
     </div>
 
     <!-- Equipment -->
     <div class="card">
-      <div class="card-title">Equipment</div>
-      <div class="card-body">
+      <div class="card-title" id="card-equipment-title" onclick="toggleCard('card-equipment')">Equipment<span class="chevron">▾</span></div>
+      <div class="card-body-wrap" id="card-equipment-body"><div class="card-body">
         <div class="field-row" style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
           <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-dim);white-space:nowrap;cursor:pointer;">
             <input type="checkbox" id="container-check" onchange="recalcBulk()" style="width:16px;height:16px;cursor:pointer;">
@@ -819,22 +832,22 @@
             </div>
           </div>
         </div>
-      </div>
+      </div></div>
     </div>
 
     <!-- Conditions -->
     <div class="card">
-      <div class="card-title">Conditions</div>
-      <div class="card-body">
+      <div class="card-title" id="card-conditions-title" onclick="toggleCard('card-conditions')">Conditions<span class="chevron collapsed">▾</span></div>
+      <div class="card-body-wrap collapsed" id="card-conditions-body" data-collapsed="true"><div class="card-body">
         <div class="cond-grid" id="cond-grid"></div>
         <div class="field" style="margin-top:8px;"><label>Notes</label><textarea class="notes-area" id="cond-notes" placeholder="Status effects, ongoing abilities…"></textarea></div>
-      </div>
+      </div></div>
     </div>
 
     <!-- Notes -->
     <div class="card">
-      <div class="card-title">Notes</div>
-      <div class="card-body">
+      <div class="card-title" id="card-notes-title" onclick="toggleCard('card-notes')">Notes<span class="chevron collapsed">▾</span></div>
+      <div class="card-body-wrap collapsed" id="card-notes-body" data-collapsed="true"><div class="card-body">
         <div class="field">
           <label>Languages</label>
           <input type="text" id="notes-languages" placeholder="e.g. Common, Vesk, Shirren…">
@@ -843,7 +856,7 @@
         <div class="field"><label>Appearance / Personality</label><textarea class="notes-area" id="notes-person" placeholder="Description…"></textarea></div>
         <div class="field"><label>Backstory</label><textarea class="notes-area" id="notes-back" placeholder="History…"></textarea></div>
         <div class="field"><label>Allies / Contacts</label><textarea class="notes-area" id="notes-allies" placeholder="Friends, factions…"></textarea></div>
-      </div>
+      </div></div>
     </div>
 
   </div>
@@ -1476,6 +1489,71 @@ const state = {
 
 const APP_BUILD_DATE = '2026-06-29';
 
+
+// ══════════════════════════════════════════════
+//  COLLAPSIBLE SECTIONS
+// ══════════════════════════════════════════════
+const CARD_IDS = [
+  'card-character','card-abilities','card-hp','card-defenses',
+  'card-perception','card-saves','card-skills','card-attacks',
+  'card-classfeatures','card-feats','card-classdc','card-spells',
+  'card-equipment','card-conditions','card-notes'
+];
+const LS_CARD_KEY = 'sf2e_card_state';
+
+function toggleCard(id) {
+  const body = document.getElementById(id + '-body');
+  const chevron = document.querySelector('#' + id + '-title .chevron');
+  if (!body) return;
+  const isCollapsed = body.classList.toggle('collapsed');
+  if (chevron) chevron.classList.toggle('collapsed', isCollapsed);
+  saveCardState();
+}
+
+function collapseAll() {
+  CARD_IDS.forEach(id => {
+    const body = document.getElementById(id + '-body');
+    const chevron = document.querySelector('#' + id + '-title .chevron');
+    if (body) body.classList.add('collapsed');
+    if (chevron) chevron.classList.add('collapsed');
+  });
+  saveCardState();
+}
+
+function expandAll() {
+  CARD_IDS.forEach(id => {
+    const body = document.getElementById(id + '-body');
+    const chevron = document.querySelector('#' + id + '-title .chevron');
+    if (body) body.classList.remove('collapsed');
+    if (chevron) chevron.classList.remove('collapsed');
+  });
+  saveCardState();
+}
+
+function saveCardState() {
+  const state = {};
+  CARD_IDS.forEach(id => {
+    const body = document.getElementById(id + '-body');
+    if (body) state[id] = body.classList.contains('collapsed');
+  });
+  try { localStorage.setItem(LS_CARD_KEY, JSON.stringify(state)); } catch(e) {}
+}
+
+function loadCardState() {
+  try {
+    const saved = localStorage.getItem(LS_CARD_KEY);
+    if (!saved) return;
+    const state = JSON.parse(saved);
+    CARD_IDS.forEach(id => {
+      if (state[id] === undefined) return;
+      const body = document.getElementById(id + '-body');
+      const chevron = document.querySelector('#' + id + '-title .chevron');
+      if (body) body.classList.toggle('collapsed', state[id]);
+      if (chevron) chevron.classList.toggle('collapsed', state[id]);
+    });
+  } catch(e) {}
+}
+
 function init() {
   buildAbilityGrid();
   buildSkills();
@@ -1492,6 +1570,8 @@ function init() {
     const saved = localStorage.getItem(LS_KEY);
     if (saved) applySheet(JSON.parse(saved));
   } catch(e) { console.warn('localStorage load failed:', e); }
+  // Restore collapsed/expanded state of sections
+  loadCardState();
 }
 
 // ══════════════════════════════════
