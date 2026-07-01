@@ -308,12 +308,13 @@
 <body>
 
 <header class="sheet-header">
-  <h1>Starfinder <span>2e</span> <span id="app-version" style="font-size:9px;color:var(--text-muted);letter-spacing:0.04em;vertical-align:middle;"></span></h1>
+  <h1>Starfinder <span>2e</span> <span id="app-version" style="font-size:13px;color:var(--text-muted);letter-spacing:0.04em;vertical-align:middle;"></span></h1>
   <div class="level-badge">
     <label>Level</label>
     <input type="number" id="char-level" value="1" min="1" max="20" oninput="recalcAll()">
   </div>
   <span id="autosave-badge" style="font-family:var(--mono);font-size:10px;color:var(--text-muted);white-space:nowrap;"></span>
+  <button class="btn" onclick="forceSave()">Save</button>
   <button class="btn" onclick="exportJSON()">Export JSON</button>
   <button class="btn secondary" onclick="importJSON()">Import JSON</button>
 </header>
@@ -794,6 +795,14 @@
     <div class="card">
       <div class="card-title">Equipment</div>
       <div class="card-body">
+        <div class="field-row" style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-dim);white-space:nowrap;cursor:pointer;">
+            <input type="checkbox" id="container-check" onchange="recalcBulk()" style="width:16px;height:16px;cursor:pointer;">
+            Container
+          </label>
+          <input type="text" id="container-type" placeholder="e.g. Backpack, satchel, toolbelt…" oninput="autoSave()"
+            style="flex:1;background:var(--panel);border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:12px;padding:5px 8px;outline:none;">
+        </div>
         <div class="equip-header"><span>Item</span><span>Qty</span><span>Bulk ea.</span><span>Total</span><span></span></div>
         <div id="equip-container"></div>
         <button class="btn-add" onclick="addEquip()">+ Add item</button>
@@ -805,7 +814,8 @@
             <div style="display:flex;align-items:center;gap:6px;">
               <span id="bulk-used" style="font-family:var(--mono);font-size:16px;font-weight:700;color:var(--accent);min-width:28px;">0</span>
               <span style="color:var(--text-muted);">/</span>
-              <input type="number" id="bulk-max" value="10" min="0" style="width:48px;background:var(--panel);border:1px solid var(--border);border-radius:4px;color:var(--text-dim);font-family:var(--mono);font-size:14px;text-align:center;outline:none;padding:3px 4px;-moz-appearance:textfield;">
+              <input type="number" id="bulk-max" value="10" min="0" oninput="recalcBulk()" style="width:48px;background:var(--panel);border:1px solid var(--border);border-radius:4px;color:var(--text-dim);font-family:var(--mono);font-size:14px;text-align:center;outline:none;padding:3px 4px;-moz-appearance:textfield;">
+              <span id="bulk-max-effective" style="display:none;color:var(--accent-dim);font-family:var(--mono);font-size:12px;"></span>
             </div>
           </div>
         </div>
@@ -1797,9 +1807,29 @@ function recalcBulk() {
     total += parseFloat(span.textContent) || 0;
   });
 
+  // Container: a worn backpack/satchel/etc. effectively grants +2 max Bulk
+  // and its own contents don't count against your carried total.
+  const hasContainer = document.getElementById('container-check')?.checked;
+  const baseMax = parseFloat(document.getElementById('bulk-max')?.value) || 0;
+  let effectiveMax = baseMax;
+  if (hasContainer) {
+    total = Math.max(0, total - 2);
+    effectiveMax = baseMax + 2;
+  }
+
   total = Math.round(total * 10) / 10;
   const el = document.getElementById('bulk-used');
   if (el) el.textContent = total % 1 === 0 ? total : total.toFixed(1);
+
+  const maxLabelEl = document.getElementById('bulk-max-effective');
+  if (maxLabelEl) {
+    if (hasContainer) {
+      maxLabelEl.textContent = '(w/ container: ' + (effectiveMax % 1 === 0 ? effectiveMax : effectiveMax.toFixed(1)) + ')';
+      maxLabelEl.style.display = '';
+    } else {
+      maxLabelEl.style.display = 'none';
+    }
+  }
 }
 
 // ══════════════════════════════════
@@ -1986,6 +2016,8 @@ function collectSheet() {
     spellKey: document.getElementById('spell-key').value,
     credits: document.getElementById('credits').value,
     bulkMax: document.getElementById('bulk-max').value,
+    containerCheck: document.getElementById('container-check').checked,
+    containerType:  document.getElementById('container-type').value,
     condNotes: document.getElementById('cond-notes').value,
     notesLanguages: document.getElementById('notes-languages').value,
     notesPerson: document.getElementById('notes-person').value,
@@ -2011,6 +2043,30 @@ function autoSave() {
       }
     } catch(e) { console.warn('Auto-save failed:', e); }
   }, 800);
+}
+
+function forceSave() {
+  clearTimeout(_autoSaveTimer);
+  try {
+    localStorage.setItem(LS_KEY, JSON.stringify(collectSheet()));
+    const badge = document.getElementById('autosave-badge');
+    if (badge) {
+      const t = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+      badge.textContent = 'Saved ' + t;
+    }
+    flashSaveBtn();
+  } catch(e) {
+    alert('Save failed: ' + e.message);
+  }
+}
+
+function flashSaveBtn() {
+  const btn = document.querySelector('[onclick="forceSave()"]');
+  if (!btn) return;
+  const orig = btn.textContent;
+  btn.textContent = 'Saved ✓';
+  btn.style.opacity = '0.7';
+  setTimeout(() => { btn.textContent = orig; btn.style.opacity = ''; }, 1200);
 }
 
 function exportJSON() {
@@ -2094,6 +2150,8 @@ function applySheet(d) {
     if(d.spellKey) document.getElementById('spell-key').value = d.spellKey;
     document.getElementById('credits').value = d.credits||0;
     if(d.bulkMax !== undefined) document.getElementById('bulk-max').value = d.bulkMax;
+    if(d.containerCheck !== undefined) document.getElementById('container-check').checked = d.containerCheck;
+    if(d.containerType !== undefined) document.getElementById('container-type').value = d.containerType;
     document.getElementById('cond-notes').value = d.condNotes||'';
     document.getElementById('notes-languages').value = d.notesLanguages||'';
     document.getElementById('notes-person').value = d.notesPerson||'';
